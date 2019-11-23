@@ -11,6 +11,7 @@ output: html_notebook
 
 
 ```{r}
+
 library(stats4)
 library(mvc)
 ```
@@ -28,6 +29,8 @@ N_Tot <- N_A + N_B
 bins <- 50
 n_flips_sample <- 10
 n_flips_test <- 10
+
+sens_thresh <- 0.5
 ```
 ```{r}
 #Obtain the number of A and B coins based on a single sample of a 100-sample Binomial distribution (ie. how many A coins in 100 trials, assuming each coin is equally likely to be picked)
@@ -119,13 +122,40 @@ for (i in 1:length(B_unique)) {
 }
 
 A_unique
+A_counts
 B_unique
+B_counts
 ```
 ```{r}
 #Get the corresponding SigMA score
 master_set <- c(0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1)
+SigMA_scores <- rep(0, 11)
 
-for (num in master_set)
+for (index in 1:length(master_set)) {
+  num <- master_set[index]
+  for (i in 1:length(A_unique)) {
+    if (A_unique[i] == num) {
+      for (j in 1:length(B_unique)) {
+        if (B_unique[j] == num) {
+          SigMA_scores[index] <- (A_counts[i] / (A_counts[i] + B_counts[i[]]))
+        } else{
+          SigMA_scores[index] <- 1
+        }
+      }
+    } else {
+      SigMA_scores[index] <- 0.5
+    }
+  }
+  
+  for (i in 1:length(B_unique)) {
+    if (B_unique[i] == num) {
+      if (!(num %in% A_unique)) {
+        SigMA_scores[index] <- 1
+      }
+    }
+  }
+}
+
 ```
 
 
