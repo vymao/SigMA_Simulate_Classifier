@@ -1,11 +1,8 @@
 ---
-title: "R Notebook"
+title: "SigMA Simulation"
 output: html_notebook
 ---
 
-This is an [R Markdown](http://rmarkdown.rstudio.com) Notebook. When you execute code within the notebook, the results appear beneath the code. 
-
-Try executing this chunk by clicking the *Run* button within the chunk or by placing your cursor inside it and pressing *Cmd+Shift+Enter*. 
 
 ```{r}
 #Problem: Let coin A have an H probability of 0.2, and let coin B have an H probability of 0.8. This is a simulation for determining the optimal number of flips in order to deliver the highest sensitivity at a particular threshhold for the probability of success.
@@ -21,8 +18,8 @@ library(mvc)
 
 ```{r}
 #Declare parameters
-A_prob <- 0.3
-B_prob <- 0.8
+A_prob <- 0.4
+B_prob <- 0.6
 
 N_A <- 50
 N_B <- 50
@@ -98,8 +95,34 @@ B_likelihoods
 
 ```{r}
 #Bin the maximum likelihoods and compute classification correctness based on sensitivity threshhold
+A_binned <- round(A_likelihoods, digits = 1)
+B_binned <- round(B_likelihoods, digits = 1)
 
+A_unique <- unique(A_binned)
+B_unique <- unique(B_binned)
 
+A_counts <- rep(0, length(A_unique))
+B_counts <- rep(0, length(B_unique))
+for (i in 1:length(A_unique)) {
+  for (j in A_binned) {
+    if (j == A_unique[i]) {
+      A_counts[i] <- A_counts[i] + 1
+    }
+  }
+}
+for (i in 1:length(B_unique)) {
+  for (j in B_binned) {
+    if (j == B_unique[i]) {
+      B_counts[i] <- B_counts[i] + 1
+    }
+  }
+}
+
+A_unique
+B_unique
+```
+```{r}
+#Get the corresponding SigMA score
 
 ```
 
