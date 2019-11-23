@@ -133,27 +133,70 @@ SigMA_scores <- rep(0, 11)
 
 for (index in 1:length(master_set)) {
   num <- master_set[index]
-  for (i in 1:length(A_unique)) {
-    if (A_unique[i] == num) {
-      for (j in 1:length(B_unique)) {
-        if (B_unique[j] == num) {
-          SigMA_scores[index] <- (A_counts[i] / (A_counts[i] + B_counts[i[]]))
-        } else{
-          SigMA_scores[index] <- 1
-        }
-      }
-    } else {
-      SigMA_scores[index] <- 0.5
+  if (num %in% A_unique) {
+    A_index <- match(num, A_unique)
+    if (num %in% B_unique) {
+      B_index <- match(num, B_unique)
+      SigMA_scores[index] <- (A_counts[A_index] / (A_counts[A_index] + B_counts[B_index]))
+      #print(SigMA_scores)
+    } else{
+      SigMA_scores[index] <- 1
     }
+  } else if ((num %in% B_unique)) {
+    SigMA_scores[index] <- 1
+  } else {
+    SigMA_scores[index] <- 0.5
+  }
+}
+
+SigMA_scores
+```
+
+
+```{r}
+#Classify based on sensitivity threshhold
+classified <- c()
+for (prob in SigMA_scores) {
+  if (prob >= sens_thresh) {
+    classified <- c(classified, 1)
+  } else {
+    classified <- c(classified, 0)
+  }
+}
+classified
+```
+```{r}
+#Test based on a random coin
+A_likelihoods <- c()
+B_likelihoods <- c()
+
+for (val in A_flips) {
+  A_vector <- c(rep(1, val), rep(0, n_flips_sample - val))
+  
+  LL <- function(prob){
+    R = dbern(A_vector, prob)
+    -sum(log(R))
   }
   
-  for (i in 1:length(B_unique)) {
-    if (B_unique[i] == num) {
-      if (!(num %in% A_unique)) {
-        SigMA_scores[index] <- 1
-      }
-    }
+  output <- suppressWarnings(mle(LL, start = list(prob = 0.9)))
+  prob <- slot(output, 'coef')
+  
+  A_likelihoods <- c(A_likelihoods, prob[[1]])
+}
+
+
+for (val in B_flips) {
+  B_vector <- c(rep(1, val), rep(0, n_flips_sample - val))
+  
+  LL <- function(prob){
+    R = dbern(B_vector, prob)
+    -sum(log(R))
   }
+  
+  output <- suppressWarnings(mle(LL, start = list(prob = 0.9)))
+  prob <- slot(output, 'coef')
+  
+  B_likelihoods <- c(B_likelihoods, prob[[1]])
 }
 
 ```
