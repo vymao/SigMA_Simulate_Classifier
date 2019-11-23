@@ -1,0 +1,113 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+This is an [R Markdown](http://rmarkdown.rstudio.com) Notebook. When you execute code within the notebook, the results appear beneath the code. 
+
+Try executing this chunk by clicking the *Run* button within the chunk or by placing your cursor inside it and pressing *Cmd+Shift+Enter*. 
+
+```{r}
+#Problem: Let coin A have an H probability of 0.2, and let coin B have an H probability of 0.8. This is a simulation for determining the optimal number of flips in order to deliver the highest sensitivity at a particular threshhold for the probability of success.
+```
+
+
+
+```{r}
+library(stats4)
+library(mvc)
+```
+
+
+```{r}
+#Declare parameters
+A_prob <- 0.3
+B_prob <- 0.8
+
+N_A <- 50
+N_B <- 50
+N_Tot <- N_A + N_B
+
+bins <- 50
+n_flips_sample <- 10
+n_flips_test <- 10
+```
+```{r}
+#Obtain the number of A and B coins based on a single sample of a 100-sample Binomial distribution (ie. how many A coins in 100 trials, assuming each coin is equally likely to be picked)
+set.seed(100)
+binom <- rbinom(1, N_Tot, 0.5)
+binom 
+```
+```{r}
+#Flip each coin 10 times and compute the maximum likelihood of the observation
+set.seed(100) 
+A_flips <- rbinom(binom, n_flips_sample, A_prob)
+B_flips <- rbinom(N_Tot - binom, n_flips_sample, B_prob)
+
+A_vector <- c(rep(1, A_flips[2]), rep(0, n_flips_sample - A_flips[2]))
+
+LL <- function(prob){
+  R = dbern(A_vector, prob)
+  -sum(log(R))
+}
+
+output <- mle(LL, start = list(prob = 0.5))
+prob <- slot(output, 'coef')
+prob[[1]]
+
+```
+```{r}
+A_likelihoods <- c()
+B_likelihoods <- c()
+
+for (val in A_flips) {
+  A_vector <- c(rep(1, val), rep(0, n_flips_sample - val))
+  
+  LL <- function(prob){
+    R = dbern(A_vector, prob)
+    -sum(log(R))
+  }
+  
+  output <- suppressWarnings(mle(LL, start = list(prob = 0.9)))
+  prob <- slot(output, 'coef')
+  
+  A_likelihoods <- c(A_likelihoods, prob[[1]])
+}
+
+
+for (val in B_flips) {
+  B_vector <- c(rep(1, val), rep(0, n_flips_sample - val))
+  
+  LL <- function(prob){
+    R = dbern(B_vector, prob)
+    -sum(log(R))
+  }
+  
+  output <- suppressWarnings(mle(LL, start = list(prob = 0.9)))
+  prob <- slot(output, 'coef')
+  
+  B_likelihoods <- c(B_likelihoods, prob[[1]])
+}
+
+
+```
+```{r}
+B_likelihoods
+```
+
+
+```{r}
+#Bin the maximum likelihoods and compute classification correctness based on sensitivity threshhold
+
+
+
+```
+
+
+
+Add a new chunk by clicking the *Insert Chunk* button on the toolbar or by pressing *Cmd+Option+I*.
+
+When you save the notebook, an HTML file containing the code and output will be saved alongside it (click the *Preview* button or press *Cmd+Shift+K* to preview the HTML file). 
+
+The preview shows you a rendered HTML copy of the contents of the editor. Consequently, unlike *Knit*, *Preview* does not run any R code chunks. Instead, the output of the chunk when it was last run in the editor is displayed.
+
