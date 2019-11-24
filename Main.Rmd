@@ -39,8 +39,8 @@ set.seed(100)
 binom <- rbinom(1, N_Tot, 0.5)
 binom 
 
-test <- SimulateCoinFlip(N_A, n_flips_sample, A_prob, B_prob, N_A, N_B, N_Tot, bins)
-test
+test <- SimulateCoinFlip(binom, n_flips_sample, A_prob, B_prob, N_A, N_B, N_Tot, bins)
+
 ```
 ```{r}
 #Flip each coin 10 times and compute the maximum likelihood of the observation
@@ -171,7 +171,7 @@ classified
 ```
 ```{r}
 #Test based on a random coin
-https://stackoverflow.com/questions/13548266/define-all-functions-in-one-r-file-call-them-from-another-r-file-how-if-pos
+
 
 ```
 

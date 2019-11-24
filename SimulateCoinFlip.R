@@ -58,6 +58,5 @@ SimulateCoinFlip <- function(N_CoinA, n_flips, A_prob, B_prob, N_A, N_B, N_Tot, 
       }
     }
   }
-
-  return(c(A_unique, A_counts, B_unique, B_counts))
+  return(list(A_unique, A_counts, B_unique, B_counts))
 }
