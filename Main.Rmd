@@ -14,6 +14,7 @@ output: html_notebook
 
 library(stats4)
 library(mvc)
+source("SimulateCoinFlip.R")
 ```
 
 
@@ -37,6 +38,9 @@ sens_thresh <- 0.5
 set.seed(100)
 binom <- rbinom(1, N_Tot, 0.5)
 binom 
+
+test <- SimulateCoinFlip(N_A, n_flips_sample, A_prob, B_prob, N_A, N_B, N_Tot, bins)
+test
 ```
 ```{r}
 #Flip each coin 10 times and compute the maximum likelihood of the observation
@@ -167,37 +171,7 @@ classified
 ```
 ```{r}
 #Test based on a random coin
-A_likelihoods <- c()
-B_likelihoods <- c()
-
-for (val in A_flips) {
-  A_vector <- c(rep(1, val), rep(0, n_flips_sample - val))
-  
-  LL <- function(prob){
-    R = dbern(A_vector, prob)
-    -sum(log(R))
-  }
-  
-  output <- suppressWarnings(mle(LL, start = list(prob = 0.9)))
-  prob <- slot(output, 'coef')
-  
-  A_likelihoods <- c(A_likelihoods, prob[[1]])
-}
-
-
-for (val in B_flips) {
-  B_vector <- c(rep(1, val), rep(0, n_flips_sample - val))
-  
-  LL <- function(prob){
-    R = dbern(B_vector, prob)
-    -sum(log(R))
-  }
-  
-  output <- suppressWarnings(mle(LL, start = list(prob = 0.9)))
-  prob <- slot(output, 'coef')
-  
-  B_likelihoods <- c(B_likelihoods, prob[[1]])
-}
+https://stackoverflow.com/questions/13548266/define-all-functions-in-one-r-file-call-them-from-another-r-file-how-if-pos
 
 ```
 
