@@ -1,7 +1,27 @@
-SimulateCoinFlip <- function(N_CoinA, n_flips, A_prob, B_prob, N_A, N_B, N_Tot, bins){
+CheckCoinFlips <- function(flips, n_flips, A_prob) {
+  new_flips <- c()
+  for (val in flips) {
+    if ((val == 0) | (val == n_flips)) {
+      flip <- -1
+      while (!(flip > 0)) {
+        flip <- rbinom(1, n_flips, A_prob)
+      }
+      newflips <- c(new_flips, flip)
+    } else {
+      new_flips <- c(new_flips, val)
+    }
+  }
+  
+  return(new_flips)
+}
+
+SimulateCoinFlip <- function(A_trials, n_flips, A_prob, B_prob, N_Tot){
   set.seed(100) 
-  A_flips <- rbinom(N_CoinA, n_flips, A_prob)
-  B_flips <- rbinom(N_Tot - N_CoinA, n_flips, B_prob)
+  A_flips <- rbinom(A_trials, n_flips, A_prob)
+  B_flips <- rbinom(N_Tot - A_trials, n_flips, B_prob)
+  
+  A_flips <- CheckCoinFlips(A_flips, n_flips, A_prob)
+  B_flips <- CheckCoinFlips(B_flips, n_flips, B_prob)
   
   A_likelihoods <- c()
   B_likelihoods <- c()

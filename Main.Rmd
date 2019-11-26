@@ -14,166 +14,116 @@ output: html_notebook
 
 library(stats4)
 library(mvc)
+library(pROC)
 source("SimulateCoinFlip.R")
+source("PrepareTest.R")
+source("TrainModel.R")
 ```
 
 
 ```{r}
-#Declare parameters
+#Declare initial parameters
 A_prob <- 0.4
 B_prob <- 0.6
 
 N_A <- 50
 N_B <- 50
-N_Tot <- N_A + N_B
+A_Draw_prob <- N_A / (N_A + N_B)
+N_Sample <- 100
+N_Test <- 20
 
-bins <- 50
 n_flips_sample <- 10
 n_flips_test <- 10
-
-sens_thresh <- 0.5
-```
-```{r}
-#Obtain the number of A and B coins based on a single sample of a 100-sample Binomial distribution (ie. how many A coins in 100 trials, assuming each coin is equally likely to be picked)
-set.seed(100)
-binom <- rbinom(1, N_Tot, 0.5)
-binom 
-
-test <- SimulateCoinFlip(binom, n_flips_sample, A_prob, B_prob, N_A, N_B, N_Tot, bins)
-
-```
-```{r}
-#Flip each coin 10 times and compute the maximum likelihood of the observation
-set.seed(100) 
-A_flips <- rbinom(binom, n_flips_sample, A_prob)
-B_flips <- rbinom(N_Tot - binom, n_flips_sample, B_prob)
-
-A_vector <- c(rep(1, A_flips[2]), rep(0, n_flips_sample - A_flips[2]))
-
-LL <- function(prob){
-  R = dbern(A_vector, prob)
-  -sum(log(R))
-}
-
-output <- mle(LL, start = list(prob = 0.5))
-prob <- slot(output, 'coef')
-prob[[1]]
-
-```
-```{r}
-A_likelihoods <- c()
-B_likelihoods <- c()
-
-for (val in A_flips) {
-  A_vector <- c(rep(1, val), rep(0, n_flips_sample - val))
-  
-  LL <- function(prob){
-    R = dbern(A_vector, prob)
-    -sum(log(R))
-  }
-  
-  output <- suppressWarnings(mle(LL, start = list(prob = 0.9)))
-  prob <- slot(output, 'coef')
-  
-  A_likelihoods <- c(A_likelihoods, prob[[1]])
-}
-
-
-for (val in B_flips) {
-  B_vector <- c(rep(1, val), rep(0, n_flips_sample - val))
-  
-  LL <- function(prob){
-    R = dbern(B_vector, prob)
-    -sum(log(R))
-  }
-  
-  output <- suppressWarnings(mle(LL, start = list(prob = 0.9)))
-  prob <- slot(output, 'coef')
-  
-  B_likelihoods <- c(B_likelihoods, prob[[1]])
-}
-
-
-```
-```{r}
-B_likelihoods
 ```
 
-
-```{r}
-#Bin the maximum likelihoods and compute classification correctness based on sensitivity threshhold
-A_binned <- round(A_likelihoods, digits = 1)
-B_binned <- round(B_likelihoods, digits = 1)
-
-A_unique <- unique(A_binned)
-B_unique <- unique(B_binned)
-
-A_counts <- rep(0, length(A_unique))
-B_counts <- rep(0, length(B_unique))
-for (i in 1:length(A_unique)) {
-  for (j in A_binned) {
-    if (j == A_unique[i]) {
-      A_counts[i] <- A_counts[i] + 1
-    }
-  }
-}
-for (i in 1:length(B_unique)) {
-  for (j in B_binned) {
-    if (j == B_unique[i]) {
-      B_counts[i] <- B_counts[i] + 1
-    }
-  }
-}
-
-A_unique
-A_counts
-B_unique
-B_counts
-```
-```{r}
-#Get the corresponding SigMA score
-master_set <- c(0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1)
-SigMA_scores <- rep(0, 11)
-
-for (index in 1:length(master_set)) {
-  num <- master_set[index]
-  if (num %in% A_unique) {
-    A_index <- match(num, A_unique)
-    if (num %in% B_unique) {
-      B_index <- match(num, B_unique)
-      SigMA_scores[index] <- (A_counts[A_index] / (A_counts[A_index] + B_counts[B_index]))
-      #print(SigMA_scores)
-    } else{
-      SigMA_scores[index] <- 1
-    }
-  } else if ((num %in% B_unique)) {
-    SigMA_scores[index] <- 1
-  } else {
-    SigMA_scores[index] <- 0.5
-  }
-}
-
-SigMA_scores
-```
-
-
-```{r}
-#Classify based on sensitivity threshhold
-classified <- c()
-for (prob in SigMA_scores) {
-  if (prob >= sens_thresh) {
-    classified <- c(classified, 1)
-  } else {
-    classified <- c(classified, 0)
-  }
-}
-classified
-```
 ```{r}
 #Test based on a random coin
+SigMA_scores <- TrainModel(A_prob, B_prob, N_A, N_B, N_sample, N_Test, n_flips_sample, A_Draw_prob)
+SigMA_scores
+set.seed(150)
+A_num_test <- rbinom(1, N_Test, A_Draw_prob)
+test <- SimulateCoinFlip(A_num_test, n_flips_test, A_prob, B_prob, N_Test)
+A_unique_test <- test[1][[1]]
+A_counts_test <- test[2][[1]]
+B_unique_test <- test[3][[1]]
+B_counts_test <- test[4][[1]]
 
+test1 <- PrepareTest(A_unique_test, A_counts_test, B_unique_test, B_counts_test, SigMA_scores)
+samples1 <- test1[1][[1]]
+prob1 <- test1[2][[1]]
+
+
+n_flips_sample <- 5
+SigMA_scores <- TrainModel(A_prob, B_prob, N_A, N_B, N_sample, N_Test, n_flips_sample)
+SigMA_scores
+set.seed(150)
+A_num_test <- rbinom(1, N_Test, A_Draw_prob)
+test <- SimulateCoinFlip(A_num_test, n_flips_test, A_prob, B_prob, N_Test)
+A_unique_test <- test[1][[1]]
+A_counts_test <- test[2][[1]]
+B_unique_test <- test[3][[1]]
+B_counts_test <- test[4][[1]]
+
+test1 <- PrepareTest(A_unique_test, A_counts_test, B_unique_test, B_counts_test, SigMA_scores)
+samples2 <- test1[1][[1]]
+prob12<- test1[2][[1]]
+
+
+n_flips_sample <- 20
+SigMA_scores <- TrainModel(A_prob, B_prob, N_A, N_B, N_sample, N_Test, n_flips_sample)
+SigMA_scores
+set.seed(150)
+A_num_test <- rbinom(1, N_Test, A_Draw_prob)
+test <- SimulateCoinFlip(A_num_test, n_flips_test, A_prob, B_prob, N_Test)
+A_unique_test <- test[1][[1]]
+A_counts_test <- test[2][[1]]
+B_unique_test <- test[3][[1]]
+B_counts_test <- test[4][[1]]
+
+test1 <- PrepareTest(A_unique_test, A_counts_test, B_unique_test, B_counts_test, SigMA_scores)
+samples3 <- test1[1][[1]]
+prob3<- test1[2][[1]]
+
+
+n_flips_sample <- 50
+SigMA_scores <- TrainModel(A_prob, B_prob, N_A, N_B, N_sample, N_Test, n_flips_sample)
+SigMA_scores
+set.seed(150)
+A_num_test <- rbinom(1, N_Test, A_Draw_prob)
+test <- SimulateCoinFlip(A_num_test, n_flips_test, A_prob, B_prob, N_Test)
+A_unique_test <- test[1][[1]]
+A_counts_test <- test[2][[1]]
+B_unique_test <- test[3][[1]]
+B_counts_test <- test[4][[1]]
+
+test1 <- PrepareTest(A_unique_test, A_counts_test, B_unique_test, B_counts_test, SigMA_scores)
+samples4 <- test1[1][[1]]
+prob4<- test1[2][[1]]
 
 ```
+```{r}
+samples1
+samples2
+samples3
+samples4
+```
+```{r}
+prob1
+prob2
+prob3
+prob4
+```
+
+
+```{r}
+#Generate ROC curve based on results
+par(pty = "s")
+ROC <- plot(roc(samples1, prob1), col = "blue")
+ROC <- plot(roc(samples2, prob2), col = "green", add = TRUE)
+ROC <- plot(roc(samples3, prob3), col = "red", add = TRUE)
+ROC <- plot(roc(samples4, prob4), col = "black", add = TRUE)
+```
+
 
 
 
