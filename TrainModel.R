@@ -1,3 +1,13 @@
+CreateMasterSet <- function(difference) {
+  num <- 0
+  sigma <- c()
+  while (!(num > 1)) {
+    sigma <- c(sigma, num)
+    num <- num + difference
+  }
+  return(sigma)
+}
+
 TrainModel <- function(A_prob, B_prob, N_A, N_B, N_sample, N_Test, n_flips_sample, A_Draw_Prob) {
   set.seed(100)
   binom <- rbinom(1, N_Sample, A_Draw_prob)
