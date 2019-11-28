@@ -28,8 +28,8 @@ B_prob <- 0.6
 N_A <- 50
 N_B <- 50
 A_Draw_prob <- N_A / (N_A + N_B)
-N_Sample <- 100
-N_Test <- 20
+N_Sample <- 2000
+N_Test <- 50
 
 n_flips_test <- 20
 ```
@@ -37,7 +37,7 @@ n_flips_test <- 20
 ```{r}
 #Test based on a random coin
 n_flips_sample <- 20
-results <- TrainModel(A_prob, B_prob, N_A, N_B, N_sample, N_Test, n_flips_sample, A_Draw_prob)
+results <- TrainModel(A_prob, B_prob, N_A, N_B, N_Sample, N_Test, n_flips_sample, A_Draw_prob)
 SigMA_scores <- results[1][[1]]
 master_list <- results[2][[1]]
 set.seed(150)
@@ -54,7 +54,7 @@ prob1 <- test[2][[1]]
 
 
 n_flips_sample <- 25
-results <- TrainModel(A_prob, B_prob, N_A, N_B, N_sample, N_Test, n_flips_sample, A_Draw_prob)
+results <- TrainModel(A_prob, B_prob, N_A, N_B, N_Sample, N_Test, n_flips_sample, A_Draw_prob)
 SigMA_scores <- results[1][[1]]
 master_list <- results[2][[1]]
 set.seed(150)
@@ -71,7 +71,7 @@ prob2 <- test[2][[1]]
 
 
 n_flips_sample <- 50
-results <- TrainModel(A_prob, B_prob, N_A, N_B, N_sample, N_Test, n_flips_sample, A_Draw_prob)
+results <- TrainModel(A_prob, B_prob, N_A, N_B, N_Sample, N_Test, n_flips_sample, A_Draw_prob)
 SigMA_scores <- results[1][[1]]
 master_list <- results[2][[1]]
 set.seed(150)
@@ -88,7 +88,7 @@ prob3 <- test[2][[1]]
 
 
 n_flips_sample <- 10
-results <- TrainModel(A_prob, B_prob, N_A, N_B, N_sample, N_Test, n_flips_sample, A_Draw_prob)
+results <- TrainModel(A_prob, B_prob, N_A, N_B, N_Sample, N_Test, n_flips_sample, A_Draw_prob)
 SigMA_scores <- results[1][[1]]
 master_list <- results[2][[1]]
 set.seed(150)
@@ -104,7 +104,7 @@ samples4 <- test[1][[1]]
 prob4 <- test[2][[1]]
 
 n_flips_sample <- 100
-results <- TrainModel(A_prob, B_prob, N_A, N_B, N_sample, N_Test, n_flips_sample, A_Draw_prob)
+results <- TrainModel(A_prob, B_prob, N_A, N_B, N_Sample, N_Test, n_flips_sample, A_Draw_prob)
 SigMA_scores <- results[1][[1]]
 master_list <- results[2][[1]]
 set.seed(150)
