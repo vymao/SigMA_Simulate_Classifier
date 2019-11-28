@@ -15,7 +15,7 @@ CheckCoinFlips <- function(flips, n_flips, A_prob) {
   return(new_flips)
 }
 
-SimulateCoinFlip <- function(A_trials, n_flips, A_prob, B_prob, N_Tot){
+SimulateCoinFlip <- function(A_trials, n_flips, A_prob, B_prob, N_Tot, master_list){
   set.seed(100) 
   A_flips <- rbinom(A_trials, n_flips, A_prob)
   B_flips <- rbinom(N_Tot - A_trials, n_flips, B_prob)
@@ -56,8 +56,21 @@ SimulateCoinFlip <- function(A_trials, n_flips, A_prob, B_prob, N_Tot){
   }
   
   
-  A_binned <- round(A_likelihoods, digits = 1)
-  B_binned <- round(B_likelihoods, digits = 1)
+  A_binned <- c()
+  B_binned <- c()
+  for (val in A_likelihoods) {
+    index <- which.min(abs(master_list - val))
+    A_binned <- c(A_binned, master_list[index])
+    #print(master_list[index])
+  }
+  for (val in B_likelihoods) {
+    index <- which.min(abs(master_list - val))
+    B_binned <- c(B_binned, master_list[index])
+  }
+  
+  #print(A_likelihoods)
+  #A_binned <- round(A_likelihoods, digits = 1)
+  #B_binned <- round(B_likelihoods, digits = 1)
   
   A_unique <- unique(A_binned)
   B_unique <- unique(B_binned)

@@ -11,7 +11,6 @@ output: html_notebook
 
 
 ```{r}
-
 library(stats4)
 library(mvc)
 library(pROC)
@@ -32,74 +31,93 @@ A_Draw_prob <- N_A / (N_A + N_B)
 N_Sample <- 100
 N_Test <- 20
 
-n_flips_sample <- 10
-n_flips_test <- 10
+n_flips_test <- 20
 ```
 
 ```{r}
 #Test based on a random coin
-SigMA_scores <- TrainModel(A_prob, B_prob, N_A, N_B, N_sample, N_Test, n_flips_sample, A_Draw_prob)
-SigMA_scores
-set.seed(150)
-A_num_test <- rbinom(1, N_Test, A_Draw_prob)
-test <- SimulateCoinFlip(A_num_test, n_flips_test, A_prob, B_prob, N_Test)
-A_unique_test <- test[1][[1]]
-A_counts_test <- test[2][[1]]
-B_unique_test <- test[3][[1]]
-B_counts_test <- test[4][[1]]
-
-test1 <- PrepareTest(A_unique_test, A_counts_test, B_unique_test, B_counts_test, SigMA_scores)
-samples1 <- test1[1][[1]]
-prob1 <- test1[2][[1]]
-
-
-n_flips_sample <- 5
-SigMA_scores <- TrainModel(A_prob, B_prob, N_A, N_B, N_sample, N_Test, n_flips_sample)
-SigMA_scores
-set.seed(150)
-A_num_test <- rbinom(1, N_Test, A_Draw_prob)
-test <- SimulateCoinFlip(A_num_test, n_flips_test, A_prob, B_prob, N_Test)
-A_unique_test <- test[1][[1]]
-A_counts_test <- test[2][[1]]
-B_unique_test <- test[3][[1]]
-B_counts_test <- test[4][[1]]
-
-test1 <- PrepareTest(A_unique_test, A_counts_test, B_unique_test, B_counts_test, SigMA_scores)
-samples2 <- test1[1][[1]]
-prob12<- test1[2][[1]]
-
-
 n_flips_sample <- 20
-SigMA_scores <- TrainModel(A_prob, B_prob, N_A, N_B, N_sample, N_Test, n_flips_sample)
-SigMA_scores
+results <- TrainModel(A_prob, B_prob, N_A, N_B, N_sample, N_Test, n_flips_sample, A_Draw_prob)
+SigMA_scores <- results[1][[1]]
+master_list <- results[2][[1]]
 set.seed(150)
 A_num_test <- rbinom(1, N_Test, A_Draw_prob)
-test <- SimulateCoinFlip(A_num_test, n_flips_test, A_prob, B_prob, N_Test)
+test <- SimulateCoinFlip(A_num_test, n_flips_test, A_prob, B_prob, N_Test, master_list)
 A_unique_test <- test[1][[1]]
 A_counts_test <- test[2][[1]]
 B_unique_test <- test[3][[1]]
 B_counts_test <- test[4][[1]]
 
-test1 <- PrepareTest(A_unique_test, A_counts_test, B_unique_test, B_counts_test, SigMA_scores)
-samples3 <- test1[1][[1]]
-prob3<- test1[2][[1]]
+test <- PrepareTest(A_unique_test, A_counts_test, B_unique_test, B_counts_test, SigMA_scores, master_list)
+samples1 <- test[1][[1]]
+prob1 <- test[2][[1]]
+
+
+n_flips_sample <- 25
+results <- TrainModel(A_prob, B_prob, N_A, N_B, N_sample, N_Test, n_flips_sample, A_Draw_prob)
+SigMA_scores <- results[1][[1]]
+master_list <- results[2][[1]]
+set.seed(150)
+A_num_test <- rbinom(1, N_Test, A_Draw_prob)
+test <- SimulateCoinFlip(A_num_test, n_flips_test, A_prob, B_prob, N_Test, master_list)
+A_unique_test <- test[1][[1]]
+A_counts_test <- test[2][[1]]
+B_unique_test <- test[3][[1]]
+B_counts_test <- test[4][[1]]
+
+test <- PrepareTest(A_unique_test, A_counts_test, B_unique_test, B_counts_test, SigMA_scores, master_list)
+samples2 <- test[1][[1]]
+prob2 <- test[2][[1]]
 
 
 n_flips_sample <- 50
-SigMA_scores <- TrainModel(A_prob, B_prob, N_A, N_B, N_sample, N_Test, n_flips_sample)
-SigMA_scores
+results <- TrainModel(A_prob, B_prob, N_A, N_B, N_sample, N_Test, n_flips_sample, A_Draw_prob)
+SigMA_scores <- results[1][[1]]
+master_list <- results[2][[1]]
 set.seed(150)
 A_num_test <- rbinom(1, N_Test, A_Draw_prob)
-test <- SimulateCoinFlip(A_num_test, n_flips_test, A_prob, B_prob, N_Test)
+test <- SimulateCoinFlip(A_num_test, n_flips_test, A_prob, B_prob, N_Test, master_list)
 A_unique_test <- test[1][[1]]
 A_counts_test <- test[2][[1]]
 B_unique_test <- test[3][[1]]
 B_counts_test <- test[4][[1]]
 
-test1 <- PrepareTest(A_unique_test, A_counts_test, B_unique_test, B_counts_test, SigMA_scores)
-samples4 <- test1[1][[1]]
-prob4<- test1[2][[1]]
+test <- PrepareTest(A_unique_test, A_counts_test, B_unique_test, B_counts_test, SigMA_scores, master_list)
+samples3 <- test[1][[1]]
+prob3 <- test[2][[1]]
 
+
+n_flips_sample <- 10
+results <- TrainModel(A_prob, B_prob, N_A, N_B, N_sample, N_Test, n_flips_sample, A_Draw_prob)
+SigMA_scores <- results[1][[1]]
+master_list <- results[2][[1]]
+set.seed(150)
+A_num_test <- rbinom(1, N_Test, A_Draw_prob)
+test <- SimulateCoinFlip(A_num_test, n_flips_test, A_prob, B_prob, N_Test, master_list)
+A_unique_test <- test[1][[1]]
+A_counts_test <- test[2][[1]]
+B_unique_test <- test[3][[1]]
+B_counts_test <- test[4][[1]]
+
+test <- PrepareTest(A_unique_test, A_counts_test, B_unique_test, B_counts_test, SigMA_scores, master_list)
+samples4 <- test[1][[1]]
+prob4 <- test[2][[1]]
+
+n_flips_sample <- 100
+results <- TrainModel(A_prob, B_prob, N_A, N_B, N_sample, N_Test, n_flips_sample, A_Draw_prob)
+SigMA_scores <- results[1][[1]]
+master_list <- results[2][[1]]
+set.seed(150)
+A_num_test <- rbinom(1, N_Test, A_Draw_prob)
+test <- SimulateCoinFlip(A_num_test, n_flips_test, A_prob, B_prob, N_Test, master_list)
+A_unique_test <- test[1][[1]]
+A_counts_test <- test[2][[1]]
+B_unique_test <- test[3][[1]]
+B_counts_test <- test[4][[1]]
+
+test <- PrepareTest(A_unique_test, A_counts_test, B_unique_test, B_counts_test, SigMA_scores, master_list)
+samples5 <- test[1][[1]]
+prob5 <- test[2][[1]]
 ```
 ```{r}
 samples1
@@ -122,6 +140,14 @@ ROC <- plot(roc(samples1, prob1), col = "blue")
 ROC <- plot(roc(samples2, prob2), col = "green", add = TRUE)
 ROC <- plot(roc(samples3, prob3), col = "red", add = TRUE)
 ROC <- plot(roc(samples4, prob4), col = "black", add = TRUE)
+ROC <- plot(roc(samples5, prob5), col = "yellow", add = TRUE)
+
+legend(
+  "bottomright", 
+  lty=c(1,1,1,1), 
+  col=c("blue", "green", "red", "black", "yellow"), 
+  legend = c("N=20", "N=25", "N=50", "N=10", "N=100")
+)
 ```
 
 

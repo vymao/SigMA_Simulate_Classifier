@@ -1,11 +1,16 @@
-CreateMasterSet <- function(difference) {
+CreateMasterSet <- function(num_values) {
   num <- 0
   sigma <- c()
-  while (!(num > 1)) {
+  
+  difference <- 1 / num_values
+  
+  while ((num <= 1)) {
     sigma <- c(sigma, num)
     num <- num + difference
   }
-  return(sigma)
+  sigma <- c(sigma, num)
+  sigma <- round(sigma, digits = 2)
+  return(sigma) 
 }
 
 TrainModel <- function(A_prob, B_prob, N_A, N_B, N_sample, N_Test, n_flips_sample, A_Draw_Prob) {
@@ -13,7 +18,8 @@ TrainModel <- function(A_prob, B_prob, N_A, N_B, N_sample, N_Test, n_flips_sampl
   binom <- rbinom(1, N_Sample, A_Draw_prob)
   binom 
   
-  train <- SimulateCoinFlip(binom, n_flips_sample, A_prob, B_prob, N_Sample)
+  master_set <- CreateMasterSet(100)
+  train <- SimulateCoinFlip(binom, n_flips_sample, A_prob, B_prob, N_Sample, master_set)
   A_unique_train <- train[1][[1]]
   A_counts_train <- train[2][[1]]
   B_unique_train <- train[3][[1]]
@@ -21,8 +27,8 @@ TrainModel <- function(A_prob, B_prob, N_A, N_B, N_sample, N_Test, n_flips_sampl
   
   
   #Get the corresponding SigMA score
-  master_set <- c(0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1)
-  SigMA_scores <- rep(0, 11)
+  #master_set <- c(0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1)
+  SigMA_scores <- rep(0, length(master_set))
   
   for (index in 1:length(master_set)) {
     num <- master_set[index]
@@ -42,5 +48,6 @@ TrainModel <- function(A_prob, B_prob, N_A, N_B, N_sample, N_Test, n_flips_sampl
     }
   }
   
-  return(SigMA_scores)
+  #return(SigMA_scores)
+  return(list(SigMA_scores, master_set))
 }

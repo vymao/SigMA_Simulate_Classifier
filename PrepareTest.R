@@ -1,4 +1,4 @@
-PrepareTest <- function(A_unique_test, A_counts_test, B_unique_test, B_counts_test, SigMA_scores) {
+PrepareTest <- function(A_unique_test, A_counts_test, B_unique_test, B_counts_test, SigMA_scores, master_set) {
   samples <- c();
   prob <- c();
   for (i in 1:length(A_counts_test)) {
